@@ -13,11 +13,11 @@ public class rogueLikeEum {
 		/**地板**/
 		FLOOR(0),
 		/**房间**/
-		 ROOM(1),
+		ROOM(1),
 		/**走廊**/
-		 CORRIDOR(2),
-		 /**墙**/
-		 WALL(3),
+		CORRIDOR(2),
+		/**墙**/
+	    WALL(3),
 		;
 		
 		private final int index;

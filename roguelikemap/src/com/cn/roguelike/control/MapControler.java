@@ -2,7 +2,6 @@ package com.cn.roguelike.control;
 
 import com.cn.roguelike.bean.MapBean;
 import com.cn.roguelike.control.rogueLikeEum.MapInfoType;
-
 public class MapControler {
 	/** 地图X最大值*/
 	private int maxXsize=100;

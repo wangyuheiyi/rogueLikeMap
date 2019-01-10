@@ -1,5 +1,9 @@
 package com.cn.roguelike.bean;
-
+/**
+ * 地图实体
+ * @author Administrator
+ *
+ */
 public class MapBean {
 	
 	/**地图信息*/
