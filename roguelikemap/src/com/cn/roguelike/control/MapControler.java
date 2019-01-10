@@ -50,4 +50,8 @@ public class MapControler {
 		}
 		System.out.println(sb.toString());
 	}
+	
+	private boolean creatRoom(){
+		return false;
+	}
 }
