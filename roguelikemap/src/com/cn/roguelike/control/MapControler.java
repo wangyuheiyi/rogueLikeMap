@@ -1,7 +1,7 @@
 package com.cn.roguelike.control;
 
 import com.cn.roguelike.bean.MapBean;
-import com.cn.roguelike.control.rogueLikeEum.MapInfoType;
+import com.cn.roguelike.util.LLAssert;
 public class MapControler {
 	/** 地图X最大值*/
 	private int maxXsize=100;
@@ -36,22 +36,15 @@ public class MapControler {
 	
 	public void initMapInfo() {
 		mapBean=new MapBean(maxXsize,maxYsize);
-		for(int i=0;i<maxXsize;i++) {
-			for(int j=0;j<maxYsize;j++) {
-				mapBean.getArrMap()[i][j]=MapInfoType.FLOOR.getIndex();
-			}
-		}
 	}
 	
 	public void printMapInfo() {
-		if(mapBean==null) {
-			System.out.println("map is null!");
-			return;
-		}
+		LLAssert.isTrue(mapBean!=null,"map is null!");
+		LLAssert.isTrue(mapBean.getArrPoint().length>0,"map is empty!");
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<maxXsize;i++) {
 			for(int j=0;j<maxYsize;j++) {
-				sb.append(String.valueOf(mapBean.getArrMap()[i][j]));
+				sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
 			}
 			sb.append("\r\n");
 		}

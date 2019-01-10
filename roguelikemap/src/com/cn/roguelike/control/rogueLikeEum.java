@@ -39,4 +39,37 @@ public class rogueLikeEum {
 			return LLIndexedEnum.IndexedEnumUtil.valueOf(values, index);
 		}
 	}
+	
+	/**
+	 * 模块的英雄技能
+	 */
+	public static enum RoomType implements LLIndexedEnum 
+	{
+		/**方形**/
+		SQUARE(0),
+		/**圆形**/
+		CIRCULAR(1),
+		/**多边形**/
+		POLYGON(3),
+		;
+		
+		private final int index;
+		
+		private RoomType(int index)
+		{
+			this.index = index;
+		}
+		@Override
+		public int getIndex() 
+		{
+			return index;
+		}
+		
+		private static final List<RoomType> values = IndexedEnumUtil.toIndexes(RoomType.values());
+
+		public static RoomType valueOf(int index)
+		{
+			return LLIndexedEnum.IndexedEnumUtil.valueOf(values, index);
+		}
+	}
 }
