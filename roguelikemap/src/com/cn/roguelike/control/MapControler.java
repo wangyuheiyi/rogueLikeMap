@@ -1,6 +1,7 @@
 package com.cn.roguelike.control;
 
 import com.cn.roguelike.bean.MapBean;
+import com.cn.roguelike.bean.RoomBean;
 import com.cn.roguelike.util.LLAssert;
 public class MapControler {
 	/** 地图X最大值*/
@@ -8,6 +9,9 @@ public class MapControler {
 	
 	/** 地图Y最大值*/
 	private int maxYsize=100;
+	
+	/** 地图最大房间数量*/
+	private int maxRoomNum=50;
 	
 	private MapBean mapBean;
 	
@@ -34,8 +38,28 @@ public class MapControler {
 		this.maxYsize = maxYsize;
 	}
 	
+	public int getMaxRoomNum() {
+		return maxRoomNum;
+	}
+
+	public void setMaxRoomNum(int maxRoomNum) {
+		this.maxRoomNum = maxRoomNum;
+	}
+
 	public void initMapInfo() {
 		mapBean=new MapBean(maxXsize,maxYsize);
+	}
+	
+	public void creatRoomByMap(){
+		//循环生成房间
+		RoomBean roomBean=null;
+		for(int i=0;i<maxRoomNum;i++) {
+			roomBean=new RoomBean();
+			roomBean.creatRoom(1, maxXsize, maxYsize);
+			if(!mapBean.checkCanAddRoomNoConnect(roomBean, maxXsize, maxYsize)) continue;
+			roomBean.setRoomId(mapBean.getMaxRoomId()+i);
+			mapBean.addRoomToMap(roomBean);
+		}
 	}
 	
 	public void printMapInfo() {
@@ -51,7 +75,6 @@ public class MapControler {
 		System.out.println(sb.toString());
 	}
 	
-	private boolean creatRoom(){
-		return false;
-	}
+	
+	
 }

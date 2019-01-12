@@ -46,9 +46,9 @@ public class rogueLikeEum {
 	public static enum RoomType implements LLIndexedEnum 
 	{
 		/**方形**/
-		SQUARE(0),
+		SQUARE(1),
 		/**圆形**/
-		CIRCULAR(1),
+		CIRCULAR(2),
 		/**多边形**/
 		POLYGON(3),
 		;
