@@ -50,6 +50,9 @@ public class MapControler {
 		mapBean=new MapBean(maxXsize,maxYsize);
 	}
 	
+	/**
+	 * 创建一个房间
+	 */
 	public void creatRoomByMap(){
 		//循环生成房间
 		RoomBean roomBean=null;
@@ -62,6 +65,21 @@ public class MapControler {
 		}
 	}
 	
+	public void creatCorridor() {
+		//随机选择一个点
+		
+	}
+	
+	/**
+	 * 4方位填充算法
+	 */
+	private void floodFill() {
+		
+	}
+	
+	/**
+	 * 输出整个地图
+	 */
 	public void printMapInfo() {
 		LLAssert.isTrue(mapBean!=null,"map is null!");
 		LLAssert.isTrue(mapBean.getArrPoint().length>0,"map is empty!");
@@ -74,6 +92,7 @@ public class MapControler {
 		}
 		System.out.println(sb.toString());
 	}
+	
 	
 	
 	
