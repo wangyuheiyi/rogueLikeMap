@@ -17,7 +17,7 @@ public class RoomBean {
 	/** 房间最小边长*/
 	private int minRoomSide=5;
 	/** 房间最大边长*/
-	private int maxRoomSide=10;
+	private int maxRoomSide=20;
 	/** 点x值*/
 	private int x;
 	/** 点y值*/
@@ -77,10 +77,13 @@ public class RoomBean {
 		RoomType roomType=RoomType.valueOf(rroomType);
 		switch (roomType) {
 		case SQUARE:
-			creatSquareRoom(xRange,yRange);
+			creatPolygonRoom(xRange,yRange);
 			break;
 		case CIRCULAR:
 			creatCircularRoom(xRange,yRange);
+			break;
+		case POLYGON:
+			creatPolygonRoom(xRange,yRange);
 			break;
 		default:
 			creatSquareRoom(xRange,yRange);
@@ -108,12 +111,17 @@ public class RoomBean {
 		}
 	}
 	
+	/**
+	 * 穿件一个圆形房间
+	 * @param xRange
+	 * @param yRange
+	 */
 	private void creatCircularRoom(int xRange,int yRange) {
 		//随机一个圆心
 		int xCircle=LLMathHelper.random(0+maxRoomSide, xRange-maxRoomSide);
 		int YCircle=LLMathHelper.random(0+maxRoomSide, yRange-maxRoomSide);
 		//随机一个半径
-		int radius=LLMathHelper.random(minRoomSide, maxRoomSide);
+		int radius=LLMathHelper.random(minRoomSide, maxRoomSide/2);
 		//设置远点
 		this.x=xCircle-radius;
 		if(this.x<0) this.x=0;
@@ -126,19 +134,21 @@ public class RoomBean {
 			roomsize++;
 		}
 		//循环生成原房间上半部分
-		int ysize=1;
+		int ysize=3;
 		for(int i=0;i<radius;i++) {
 			drawLeftPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
 			drawRightPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
 			ysize++;
+			if(ysize>=radius) ysize=radius;
 			roomsize++;
 		}
 		//循环生成原房间下半部分
-		ysize=1;
+		ysize=3;
 		for(int i=radius*2;i>radius;i--) {
 			drawLeftPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
 			drawRightPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
 			ysize++;
+			if(ysize>=radius) ysize=radius;
 			roomsize++;
 		}
 	}
@@ -152,6 +162,31 @@ public class RoomBean {
 	private void drawRightPoint(int x,int YCircle,int ysize,int type) {
 		for(int j=1;j<=ysize;j++) {
 			roomPointList.add(new PointBean(x,YCircle+j,type));
+		}
+	}
+	
+	private void creatPolygonRoom(int xRange,int yRange) {
+		//随机一个原点
+		this.x=LLMathHelper.random(0, xRange-maxRoomSide);
+		this.y=LLMathHelper.random(0, yRange-maxRoomSide);
+		//随机画板的x轴边长
+		int xSideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
+		//随机画板的y轴边长
+		int ySideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
+		int startPoint,endPoint;
+		//每一行都会生成不同的数据
+		for(int j=0;j<ySideLen;j++) {
+			startPoint=0;
+			endPoint=xSideLen;
+			//如果是偶数行就跳过以免图形太奇怪
+			if(xSideLen-minRoomSide>3) {
+				startPoint=LLMathHelper.random(0, (xSideLen-minRoomSide)/2);
+				endPoint=LLMathHelper.random(xSideLen-(xSideLen-minRoomSide)/2, xSideLen);
+			}
+			for(int i=startPoint;i<endPoint;i++) {
+				roomPointList.add(new PointBean(x+i,y+j,MapInfoType.ROOM.getIndex()));
+				roomsize++;
+			}
 		}
 	}
 }
