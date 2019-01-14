@@ -16,10 +16,8 @@ public class rogueLikeEum {
 		ROOM(1),
 		/**走廊**/
 		CORRIDOR(2),
-		/**墙**/
-	    WALL(3),
 	    /**链接点（门）**/
-	    DOOR(4),
+	    DOOR(3),
 		;
 		
 		private final int index;

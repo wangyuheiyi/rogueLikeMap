@@ -8,6 +8,7 @@ public class GameStart {
 		MapControler.getInstance().creatRoomByMap();
 		MapControler.getInstance().creatCorridor();
 		MapControler.getInstance().setRoomLinkPoint();
+		MapControler.getInstance().corridorRollBack();
 		MapControler.getInstance().printMapInfo();
 	}
 }

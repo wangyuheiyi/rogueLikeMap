@@ -194,8 +194,53 @@ public class MapControler {
 		}
 	}
 	
-	public void RollBack() {
-		
+	public void corridorRollBack() {
+		//循环所有的通道点
+		for(int i=0;i<maxXsize;i++) {
+			for(int j=0;j<maxYsize;j++) {
+				if(mapBean.getArrPoint()[i][j]!=MapInfoType.CORRIDOR.getIndex()) continue;
+				floodFill4Back(i,j);
+			}
+		}
+	}
+	
+	private void floodFill4Back(int newX,int newY){
+		int count=0;
+		int tmpx,tmpy;
+		tmpx=tmpy=-1;
+		if(newX>0) {
+			if(mapBean.getArrPoint()[newX-1][newY]==MapInfoType.CORRIDOR.getIndex()||mapBean.getArrPoint()[newX-1][newY]==MapInfoType.DOOR.getIndex()) {
+				count++;
+				tmpx=newX-1;
+				tmpy=newY;
+			}
+		}
+		if(newX<maxXsize-1) {
+			if(mapBean.getArrPoint()[newX+1][newY]==MapInfoType.CORRIDOR.getIndex()||mapBean.getArrPoint()[newX+1][newY]==MapInfoType.DOOR.getIndex()) {
+				count++;
+				tmpx=newX+1;
+				tmpy=newY;
+			}
+		}
+		if(newY>0) {
+			if(mapBean.getArrPoint()[newX][newY-1]==MapInfoType.CORRIDOR.getIndex()||mapBean.getArrPoint()[newX][newY-1]==MapInfoType.DOOR.getIndex()) {
+				count++;
+				tmpx=newX;
+				tmpy=newY-1;
+			}
+		}
+		if(newY<maxYsize-1) {
+			if(mapBean.getArrPoint()[newX][newY+1]==MapInfoType.CORRIDOR.getIndex()||mapBean.getArrPoint()[newX][newY+1]==MapInfoType.DOOR.getIndex()) {
+				count++;
+				tmpx=newX;
+				tmpy=newY+1;
+			}
+		}
+		//如果没有有两个点不是地面那么说明这个点是死胡同
+		if(count<=1) {
+			mapBean.getArrPoint()[newX][newY]=MapInfoType.FLOOR.getIndex();
+			if(tmpx>=0&&tmpy>=0) floodFill4Back(tmpx,tmpy);
+		}
 	}
 	
 	/**
@@ -208,9 +253,9 @@ public class MapControler {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<maxXsize;i++) {
 			for(int j=0;j<maxYsize;j++) {
-				if(mapBean.getArrPoint()[i][j]==2)
+				if(mapBean.getArrPoint()[i][j]==MapInfoType.CORRIDOR.getIndex())
 					sb.append("#");
-				else if(mapBean.getArrPoint()[i][j]==4)
+				else if(mapBean.getArrPoint()[i][j]==MapInfoType.DOOR.getIndex())
 					sb.append("W");
 				else
 					sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
