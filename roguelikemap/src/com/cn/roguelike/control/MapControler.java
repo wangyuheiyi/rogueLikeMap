@@ -16,7 +16,7 @@ public class MapControler {
 	private int maxYsize=100;
 	
 	/** 地图最大房间数量*/
-	private int maxRoomNum=500;
+	private int maxRoomNum=300;
 	
 	private MapBean mapBean;
 	
@@ -141,6 +141,7 @@ public class MapControler {
 	public void printMapInfo() {
 		LLAssert.isTrue(mapBean!=null,"map is null!");
 		LLAssert.isTrue(mapBean.getArrPoint().length>0,"map is empty!");
+		System.out.println("room num is "+mapBean.getRoomList().size()+"*==============================*");
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<maxXsize;i++) {
 			for(int j=0;j<maxYsize;j++) {

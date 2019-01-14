@@ -17,7 +17,7 @@ public class RoomBean {
 	/** 房间最小边长*/
 	private int minRoomSide=5;
 	/** 房间最大边长*/
-	private int maxRoomSide=20;
+	private int maxRoomSide=15;
 	/** 点x值*/
 	private int x;
 	/** 点y值*/
@@ -95,13 +95,13 @@ public class RoomBean {
 	 * 创建正方型房间
 	 */
 	private void creatSquareRoom(int xRange,int yRange){
-		//随机一个原点
-		this.x=LLMathHelper.random(0, xRange-maxRoomSide);
-		this.y=LLMathHelper.random(0, yRange-maxRoomSide);
 		//随机画板的x轴边长
 		int xSideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
 		//随机画板的y轴边长
 		int ySideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
+		//随机一个原点
+		this.x=LLMathHelper.random(0, xRange-xSideLen);
+		this.y=LLMathHelper.random(0, yRange-ySideLen);
 		//正方型就将所有的房间填满
 		roomsize=xSideLen*ySideLen;
 		for(int i=0;i<xSideLen;i++) {
@@ -166,13 +166,14 @@ public class RoomBean {
 	}
 	
 	private void creatPolygonRoom(int xRange,int yRange) {
-		//随机一个原点
-		this.x=LLMathHelper.random(0, xRange-maxRoomSide);
-		this.y=LLMathHelper.random(0, yRange-maxRoomSide);
 		//随机画板的x轴边长
 		int xSideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
 		//随机画板的y轴边长
 		int ySideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
+		//随机一个原点
+		this.x=LLMathHelper.random(0, xRange-xSideLen);
+		this.y=LLMathHelper.random(0, yRange-ySideLen);
+		
 		int startPoint,endPoint;
 		//每一行都会生成不同的数据
 		for(int j=0;j<ySideLen;j++) {

@@ -99,13 +99,13 @@ public class MapBean {
 		for(PointBean pointBean:roomBean.getRoomPointList()) {
 			if(!checkIsByType(pointBean.getX(),pointBean.getY(),MapInfoType.FLOOR.getIndex())) return false;
 			//判断4个点都没有房间
-			if(pointBean.getX()!=0)
+			if(pointBean.getX()>0)
 				if(!checkIsByType(pointBean.getX()-1,pointBean.getY(),MapInfoType.FLOOR.getIndex())) return false;
-			if(pointBean.getY()!=0)
-			if(!checkIsByType(pointBean.getX(),pointBean.getY()-1,MapInfoType.FLOOR.getIndex())) return false;
-			if(pointBean.getX()!=maxXsize)
+			if(pointBean.getY()>0)
+				if(!checkIsByType(pointBean.getX(),pointBean.getY()-1,MapInfoType.FLOOR.getIndex())) return false;
+			if(pointBean.getX()<maxXsize-1)
 				if(!checkIsByType(pointBean.getX()+1,pointBean.getY(),MapInfoType.FLOOR.getIndex())) return false;
-			if(pointBean.getX()!=maxYsize)
+			if(pointBean.getY()<maxYsize-1)
 				if(!checkIsByType(pointBean.getX(),pointBean.getY()+1,MapInfoType.FLOOR.getIndex())) return false;
 		}
 		return true;
