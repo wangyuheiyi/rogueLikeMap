@@ -147,6 +147,9 @@ public class MapControler {
 		return false;
 	}
 	
+	/**
+	 * 添加链接房间的点
+	 */
 	public void setRoomLinkPoint(){
 		//循环房间根据房间设置
 		for(RoomBean roomBean:mapBean.getRoomList()){
