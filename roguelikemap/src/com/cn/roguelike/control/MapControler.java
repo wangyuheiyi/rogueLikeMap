@@ -16,7 +16,7 @@ public class MapControler {
 	private int maxYsize=100;
 	
 	/** 地图最大房间数量*/
-	private int maxRoomNum=50;
+	private int maxRoomNum=500;
 	
 	private MapBean mapBean;
 	
@@ -63,7 +63,7 @@ public class MapControler {
 		RoomBean roomBean=null;
 		for(int i=0;i<maxRoomNum;i++) {
 			roomBean=new RoomBean();
-			roomBean.creatRoom(1, maxXsize, maxYsize);
+			roomBean.creatRoom(mapBean.getMaxRoomId(), maxXsize, maxYsize);
 			if(!mapBean.checkCanAddRoomNoConnect(roomBean, maxXsize, maxYsize)) continue;
 			roomBean.setRoomId(mapBean.getMaxRoomId()+i);
 			mapBean.addRoomToMap(roomBean);
@@ -144,7 +144,10 @@ public class MapControler {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<maxXsize;i++) {
 			for(int j=0;j<maxYsize;j++) {
-				sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
+				if(mapBean.getArrPoint()[i][j]==2)
+					sb.append("#");
+				else
+					sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
 			}
 			sb.append("\r\n");
 		}
