@@ -123,4 +123,9 @@ public class MapBean {
 		}
 		return true;
 	}
+	
+	public void setRoomLinkPoint(){
+		//循环房间根据房间设置
+		
+	}
 }
