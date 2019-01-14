@@ -17,7 +17,7 @@ public class RoomBean {
 	/** 房间最小边长*/
 	private int minRoomSide=5;
 	/** 房间最大边长*/
-	private int maxRoomSide=20;
+	private int maxRoomSide=15;
 	/** 点x值*/
 	private int x;
 	/** 点y值*/
@@ -26,6 +26,10 @@ public class RoomBean {
 	private int roomsize;
 	/**房间所在点*/
 	private List<PointBean> roomPointList=new ArrayList<PointBean>();
+	/**房间边缘点*/
+	private List<PointBean> edgePointList=new ArrayList<PointBean>();
+	/**房间链接点*/
+	private List<PointBean> linkPointList=new ArrayList<PointBean>();
 	
 	public int getRoomId() {
 		return roomId;
@@ -60,6 +64,8 @@ public class RoomBean {
 		return roomPointList;
 	}
 	
+	
+	
 //	private void addPointToList(int xv,int yv,int typeValue) {
 //		//初始化所有的房间点
 //		arrPoint=new int[xSideLen][ySideLen];
@@ -70,6 +76,12 @@ public class RoomBean {
 //		}
 //	}
 	
+	public List<PointBean> getLinkPointList() {
+		return linkPointList;
+	}
+	public List<PointBean> getEdgePointList() {
+		return edgePointList;
+	}
 	public void creatRoom(int id,int xRange,int yRange){
 		this.roomId=id;
 		//随机一种房屋类型
@@ -95,18 +107,21 @@ public class RoomBean {
 	 * 创建正方型房间
 	 */
 	private void creatSquareRoom(int xRange,int yRange){
-		//随机一个原点
-		this.x=LLMathHelper.random(0, xRange-maxRoomSide);
-		this.y=LLMathHelper.random(0, yRange-maxRoomSide);
 		//随机画板的x轴边长
 		int xSideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
 		//随机画板的y轴边长
 		int ySideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
+		//随机一个原点
+		this.x=LLMathHelper.random(0, xRange-xSideLen);
+		this.y=LLMathHelper.random(0, yRange-ySideLen);
 		//正方型就将所有的房间填满
 		roomsize=xSideLen*ySideLen;
 		for(int i=0;i<xSideLen;i++) {
 			for(int j=0;j<ySideLen;j++) {
 				roomPointList.add(new PointBean(x+i,y+j,MapInfoType.ROOM.getIndex()));
+				//设置边缘点
+				if(i==0||i==xSideLen-1||j==0||j==ySideLen-1)
+					edgePointList.add(new PointBean(x+i,y+j,MapInfoType.DOOR.getIndex()));
 			}
 		}
 	}
@@ -122,7 +137,7 @@ public class RoomBean {
 		int YCircle=LLMathHelper.random(0+maxRoomSide, yRange-maxRoomSide);
 		//随机一个半径
 		int radius=LLMathHelper.random(minRoomSide, maxRoomSide/2);
-		//设置远点
+		//设置原点
 		this.x=xCircle-radius;
 		if(this.x<0) this.x=0;
 		this.y=YCircle-radius;
@@ -132,12 +147,18 @@ public class RoomBean {
 			roomPointList.add(new PointBean(x+rad,YCircle,MapInfoType.ROOM.getIndex()));
 			roomPointList.add(new PointBean(xCircle,y+rad,MapInfoType.ROOM.getIndex()));
 			roomsize++;
+			//设置边缘点
+			if(rad==0||rad==radius*2){
+				edgePointList.add(new PointBean(x+rad,YCircle,MapInfoType.DOOR.getIndex()));
+				edgePointList.add(new PointBean(xCircle,y+rad,MapInfoType.DOOR.getIndex()));
+			}
+				
 		}
 		//循环生成原房间上半部分
 		int ysize=3;
 		for(int i=0;i<radius;i++) {
-			drawLeftPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
-			drawRightPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
+			drawLeftPoint(x+i,YCircle,i,ysize,radius,MapInfoType.ROOM.getIndex());
+			drawRightPoint(x+i,YCircle,i,ysize,radius,MapInfoType.ROOM.getIndex());
 			ysize++;
 			if(ysize>=radius) ysize=radius;
 			roomsize++;
@@ -145,34 +166,46 @@ public class RoomBean {
 		//循环生成原房间下半部分
 		ysize=3;
 		for(int i=radius*2;i>radius;i--) {
-			drawLeftPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
-			drawRightPoint(x+i,YCircle,ysize,MapInfoType.ROOM.getIndex());
+			drawLeftPoint(x+i,YCircle,i,ysize,radius,MapInfoType.ROOM.getIndex());
+			drawRightPoint(x+i,YCircle,i,ysize,radius,MapInfoType.ROOM.getIndex());
 			ysize++;
 			if(ysize>=radius) ysize=radius;
 			roomsize++;
 		}
 	}
 	
-	private void drawLeftPoint(int x,int YCircle,int ysize,int type) {
+	private void drawLeftPoint(int x,int YCircle,int xsize,int ysize,int radius,int type) {
 		for(int j=ysize;j>=1;j--) {
 			roomPointList.add(new PointBean(x,YCircle-j,type));
+			//设置边缘点
+			if(xsize==0||xsize==radius*2||j==ysize)
+				edgePointList.add(new PointBean(x,YCircle-j,MapInfoType.DOOR.getIndex()));
 		}
 	}
 	
-	private void drawRightPoint(int x,int YCircle,int ysize,int type) {
+	private void drawRightPoint(int x,int YCircle,int xsize,int ysize,int radius,int type) {
 		for(int j=1;j<=ysize;j++) {
 			roomPointList.add(new PointBean(x,YCircle+j,type));
+			//设置边缘点
+			if(xsize==0||xsize==radius*2||j==ysize)
+				edgePointList.add(new PointBean(x,YCircle+j,MapInfoType.DOOR.getIndex()));
 		}
 	}
 	
+	/**
+	 * 创建不规则房间
+	 * @param xRange
+	 * @param yRange
+	 */
 	private void creatPolygonRoom(int xRange,int yRange) {
-		//随机一个原点
-		this.x=LLMathHelper.random(0, xRange-maxRoomSide);
-		this.y=LLMathHelper.random(0, yRange-maxRoomSide);
 		//随机画板的x轴边长
 		int xSideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
 		//随机画板的y轴边长
 		int ySideLen=LLMathHelper.random(minRoomSide, maxRoomSide);
+		//随机一个原点
+		this.x=LLMathHelper.random(0, xRange-xSideLen);
+		this.y=LLMathHelper.random(0, yRange-ySideLen);
+		
 		int startPoint,endPoint;
 		//每一行都会生成不同的数据
 		for(int j=0;j<ySideLen;j++) {
@@ -185,6 +218,9 @@ public class RoomBean {
 			}
 			for(int i=startPoint;i<endPoint;i++) {
 				roomPointList.add(new PointBean(x+i,y+j,MapInfoType.ROOM.getIndex()));
+				//设置边缘点
+				if(i==startPoint||i==endPoint-1||j==0||j==ySideLen-1)
+					edgePointList.add(new PointBean(x+i,y+j,MapInfoType.DOOR.getIndex()));
 				roomsize++;
 			}
 		}

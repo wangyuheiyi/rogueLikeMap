@@ -1,17 +1,26 @@
 package com.cn.roguelike.control;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cn.roguelike.bean.MapBean;
+import com.cn.roguelike.bean.PointBean;
 import com.cn.roguelike.bean.RoomBean;
+import com.cn.roguelike.control.rogueLikeEum.MapInfoType;
 import com.cn.roguelike.util.LLAssert;
+import com.cn.roguelike.util.LLMathHelper;
 public class MapControler {
 	/** 地图X最大值*/
-	private int maxXsize=100;
+	private int maxXsize=50;
 	
 	/** 地图Y最大值*/
-	private int maxYsize=100;
+	private int maxYsize=50;
 	
 	/** 地图最大房间数量*/
-	private int maxRoomNum=50;
+	private int maxRoomNum=400;
+	
+	/** 地图最大房间链接数量*/
+	private int maxRoomLinkNum=2;
 	
 	private MapBean mapBean;
 	
@@ -42,6 +51,10 @@ public class MapControler {
 		return maxRoomNum;
 	}
 
+	public int getMaxRoomLinkNum() {
+		return maxRoomLinkNum;
+	}
+
 	public void setMaxRoomNum(int maxRoomNum) {
 		this.maxRoomNum = maxRoomNum;
 	}
@@ -51,48 +64,157 @@ public class MapControler {
 	}
 	
 	/**
-	 * 创建一个房间
+	 * 创建房间
 	 */
 	public void creatRoomByMap(){
 		//循环生成房间
 		RoomBean roomBean=null;
 		for(int i=0;i<maxRoomNum;i++) {
 			roomBean=new RoomBean();
-			roomBean.creatRoom(1, maxXsize, maxYsize);
+			roomBean.creatRoom(mapBean.getMaxRoomId(), maxXsize, maxYsize);
 			if(!mapBean.checkCanAddRoomNoConnect(roomBean, maxXsize, maxYsize)) continue;
 			roomBean.setRoomId(mapBean.getMaxRoomId()+i);
 			mapBean.addRoomToMap(roomBean);
 		}
 	}
 	
-	public void creatCorridor() {
-		//随机选择一个点
-		
+	public void creatCorridor(){
+		//循环获取一个初始点，周围两格子没有其他物体,地图边缘两格不用作道路
+		for(int i=0;i<maxXsize;i++) {
+			if(i<2) continue;
+			if(i>maxXsize-3) continue;
+			for(int j=0;j<maxYsize;j++) {
+				if(j<2) continue;
+				if(j>maxYsize-3) continue;
+				if(mapBean.getArrPoint()[i][j]!=MapInfoType.FLOOR.getIndex()) continue;
+				floodFill4(-1,-1,i,j);
+			}
+		}
 	}
 	
 	/**
-	 * 4方位填充算法
+	 * 4方向填充算法
 	 */
-	private void floodFill() {
-		
+	private void floodFill4(int oldX,int oldY,int newX,int newY){
+		//判断新的点是否可以画，如果是第一个点就判断4个方向 如果是新点就判断3个方向
+		List<PointBean> pointCanCorridors=new ArrayList<PointBean>();
+		if(newX-1>=0&&!checkIsOldPoint(oldX,oldY,newX-1,newY)){
+			if(mapBean.getArrPoint()[newX-1][newY]!=MapInfoType.FLOOR.getIndex()){
+				return;
+			}else{
+				pointCanCorridors.add(new PointBean(newX-1,newY,MapInfoType.CORRIDOR.getIndex()));
+			}
+		}
+		if(newY-1>=0&&!checkIsOldPoint(oldX,oldY,newX,newY-1)){
+			if(mapBean.getArrPoint()[newX][newY-1]!=MapInfoType.FLOOR.getIndex()){
+				return;
+			}else{
+				pointCanCorridors.add(new PointBean(newX,newY-1,MapInfoType.CORRIDOR.getIndex()));
+			}
+		}
+		if(newX+1<maxXsize&&!checkIsOldPoint(oldX,oldY,newX+1,newY)){
+			if(mapBean.getArrPoint()[newX+1][newY]!=MapInfoType.FLOOR.getIndex()){
+				return;
+			}else{
+				pointCanCorridors.add(new PointBean(newX+1,newY,MapInfoType.CORRIDOR.getIndex()));
+			}
+		}
+		if(newY+1<maxYsize&&!checkIsOldPoint(oldX,oldY,newX,newY+1)){
+			if(mapBean.getArrPoint()[newX][newY+1]!=MapInfoType.FLOOR.getIndex()){
+				return;
+			}else{
+				pointCanCorridors.add(new PointBean(newX,newY+1,MapInfoType.CORRIDOR.getIndex()));
+			}
+		}
+		//如果可以添加就把点画好为隧道
+		mapBean.getArrPoint()[newX][newY]=MapInfoType.CORRIDOR.getIndex();
+		//以这个店为开始点继续扩展可能的点
+		for(PointBean pointBean:pointCanCorridors){
+			floodFill4(newX,newY,pointBean.getX(),pointBean.getY());
+		}
 	}
 	
 	/**
-	 * 输出整个地图
+	 * 判断是不是原始点
+	 * @param oldX
+	 * @param oldY
+	 * @param newX
+	 * @param newY
+	 * @return
+	 */
+	private boolean checkIsOldPoint(int oldX,int oldY,int newX,int newY){
+		if(oldX==newX&&oldY==newY) return true;
+		return false;
+	}
+	
+	/**
+	 * 添加链接房间的点
+	 */
+	public void setRoomLinkPoint(){
+		//循环房间根据房间设置
+		for(RoomBean roomBean:mapBean.getRoomList()){
+			//循环房间的边缘点
+			for(PointBean edgePoint:roomBean.getEdgePointList()){
+				//判断边缘点周边的点是否为地面,如果是地图边缘就跳过
+				if(edgePoint.getX()-1>0){
+					if(mapBean.getArrPoint()[edgePoint.getX()-1][edgePoint.getY()]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()-2][edgePoint.getY()]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX()-1,edgePoint.getY()));
+					}	
+				}
+				if(edgePoint.getX()+1<maxXsize-1){
+					if(mapBean.getArrPoint()[edgePoint.getX()+1][edgePoint.getY()]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()+2][edgePoint.getY()]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX()+1,edgePoint.getY()));
+					}	
+				}
+				if(edgePoint.getY()-1>0){
+					if(mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()-1]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()-2]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX(),edgePoint.getY()-1));
+					}	
+				}
+				if(edgePoint.getY()+1<maxYsize-1){
+					if(mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()+1]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()+2]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX(),edgePoint.getY()+1));
+					}	
+				}
+			}
+			
+			//随机这个房间的链接点为门
+			if(roomBean.getLinkPointList().size()>0){
+				PointBean linkPoint=null;
+				for(int i=0;i<maxRoomLinkNum;i++){
+					int index=LLMathHelper.random(0, roomBean.getLinkPointList().size()-1);
+					linkPoint=roomBean.getLinkPointList().get(index);
+					mapBean.getArrPoint()[linkPoint.getX()][linkPoint.getY()]=MapInfoType.DOOR.getIndex();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 打印地图
 	 */
 	public void printMapInfo() {
 		LLAssert.isTrue(mapBean!=null,"map is null!");
 		LLAssert.isTrue(mapBean.getArrPoint().length>0,"map is empty!");
+		System.out.println("room num is "+mapBean.getRoomList().size()+"*==============================*");
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<maxXsize;i++) {
 			for(int j=0;j<maxYsize;j++) {
-				sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
+				if(mapBean.getArrPoint()[i][j]==2)
+					sb.append("#");
+				else if(mapBean.getArrPoint()[i][j]==4)
+					sb.append("W");
+				else
+					sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
 			}
 			sb.append("\r\n");
 		}
 		System.out.println(sb.toString());
 	}
-	
 	
 	
 	
