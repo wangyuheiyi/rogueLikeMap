@@ -194,6 +194,10 @@ public class MapControler {
 		}
 	}
 	
+	public void RollBack() {
+		
+	}
+	
 	/**
 	 * 打印地图
 	 */
