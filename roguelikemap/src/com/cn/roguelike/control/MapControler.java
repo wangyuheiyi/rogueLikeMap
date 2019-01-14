@@ -10,13 +10,13 @@ import com.cn.roguelike.control.rogueLikeEum.MapInfoType;
 import com.cn.roguelike.util.LLAssert;
 public class MapControler {
 	/** 地图X最大值*/
-	private int maxXsize=100;
+	private int maxXsize=50;
 	
 	/** 地图Y最大值*/
-	private int maxYsize=100;
+	private int maxYsize=50;
 	
 	/** 地图最大房间数量*/
-	private int maxRoomNum=300;
+	private int maxRoomNum=400;
 	
 	private MapBean mapBean;
 	
@@ -71,9 +71,13 @@ public class MapControler {
 	}
 	
 	public void creatCorridor(){
-		//循环获取一个初始点，周围两格子没有其他物体
+		//循环获取一个初始点，周围两格子没有其他物体,地图边缘两格不用作道路
 		for(int i=0;i<maxXsize;i++) {
+			if(i<2) continue;
+			if(i>maxXsize-3) continue;
 			for(int j=0;j<maxYsize;j++) {
+				if(j<2) continue;
+				if(j>maxYsize-3) continue;
 				if(mapBean.getArrPoint()[i][j]!=MapInfoType.FLOOR.getIndex()) continue;
 				floodFill4(-1,-1,i,j);
 			}
