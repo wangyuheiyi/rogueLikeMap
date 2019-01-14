@@ -8,6 +8,7 @@ import com.cn.roguelike.bean.PointBean;
 import com.cn.roguelike.bean.RoomBean;
 import com.cn.roguelike.control.rogueLikeEum.MapInfoType;
 import com.cn.roguelike.util.LLAssert;
+import com.cn.roguelike.util.LLMathHelper;
 public class MapControler {
 	/** 地图X最大值*/
 	private int maxXsize=50;
@@ -17,6 +18,9 @@ public class MapControler {
 	
 	/** 地图最大房间数量*/
 	private int maxRoomNum=400;
+	
+	/** 地图最大房间链接数量*/
+	private int maxRoomLinkNum=2;
 	
 	private MapBean mapBean;
 	
@@ -45,6 +49,10 @@ public class MapControler {
 	
 	public int getMaxRoomNum() {
 		return maxRoomNum;
+	}
+
+	public int getMaxRoomLinkNum() {
+		return maxRoomLinkNum;
 	}
 
 	public void setMaxRoomNum(int maxRoomNum) {
@@ -139,6 +147,50 @@ public class MapControler {
 		return false;
 	}
 	
+	public void setRoomLinkPoint(){
+		//循环房间根据房间设置
+		for(RoomBean roomBean:mapBean.getRoomList()){
+			//循环房间的边缘点
+			for(PointBean edgePoint:roomBean.getEdgePointList()){
+				//判断边缘点周边的点是否为地面,如果是地图边缘就跳过
+				if(edgePoint.getX()-1>0){
+					if(mapBean.getArrPoint()[edgePoint.getX()-1][edgePoint.getY()]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()-2][edgePoint.getY()]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX()-1,edgePoint.getY()));
+					}	
+				}
+				if(edgePoint.getX()+1<maxXsize-1){
+					if(mapBean.getArrPoint()[edgePoint.getX()+1][edgePoint.getY()]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()+2][edgePoint.getY()]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX()+1,edgePoint.getY()));
+					}	
+				}
+				if(edgePoint.getY()-1>0){
+					if(mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()-1]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()-2]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX(),edgePoint.getY()-1));
+					}	
+				}
+				if(edgePoint.getY()+1<maxYsize-1){
+					if(mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()+1]==MapInfoType.FLOOR.getIndex()
+							&&mapBean.getArrPoint()[edgePoint.getX()][edgePoint.getY()+2]==MapInfoType.CORRIDOR.getIndex()){
+						roomBean.getLinkPointList().add(new PointBean(edgePoint.getX(),edgePoint.getY()+1));
+					}	
+				}
+			}
+			
+			//随机这个房间的链接点为门
+			if(roomBean.getLinkPointList().size()>0){
+				PointBean linkPoint=null;
+				for(int i=0;i<maxRoomLinkNum;i++){
+					int index=LLMathHelper.random(0, roomBean.getLinkPointList().size()-1);
+					linkPoint=roomBean.getLinkPointList().get(index);
+					mapBean.getArrPoint()[linkPoint.getX()][linkPoint.getY()]=MapInfoType.DOOR.getIndex();
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 打印地图
 	 */
@@ -151,6 +203,8 @@ public class MapControler {
 			for(int j=0;j<maxYsize;j++) {
 				if(mapBean.getArrPoint()[i][j]==2)
 					sb.append("#");
+				else if(mapBean.getArrPoint()[i][j]==4)
+					sb.append("W");
 				else
 					sb.append(String.valueOf(mapBean.getArrPoint()[i][j]));
 			}

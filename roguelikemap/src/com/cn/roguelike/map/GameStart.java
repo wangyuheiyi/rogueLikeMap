@@ -7,6 +7,7 @@ public class GameStart {
 		MapControler.getInstance().initMapInfo();
 		MapControler.getInstance().creatRoomByMap();
 		MapControler.getInstance().creatCorridor();
+		MapControler.getInstance().setRoomLinkPoint();
 		MapControler.getInstance().printMapInfo();
 	}
 }
