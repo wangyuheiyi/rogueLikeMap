@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>mapinfo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script th:inline="none">
+	</script>
+</head>
+<body>
+	<table style="border-collapse:separate;border:0px;border-spacing:0px 0px;">
+		<tr th:each="mapa : ${mapInfo}">
+			<td th:each="mapb : ${mapa}">
+				<div th:switch="${mapb}">
+				<span th:case="'0'" th:text="${mapb}" style="background-color:#FFE4E1;display:inline-block;float:left;"></span>
+				<span th:case="'1'" th:text="${mapb}" style="background-color:#6495ED;display:inline-block;float:left;"></span>
+				<span th:case="'2'" th:text="${mapb}" style="background-color:#FF00FF;display:inline-block;float:left;"></span>
+				<span th:case="'3'" th:text="${mapb}" style="background-color:#00CBD1;display:inline-block;float:left;"></span>
+				</div>
+			</td>
+		</tr>
+	</table>
+	
+	 <a th:href="@{'/creatRoom'}" >creatRoom</a>
+	 <a th:href="@{'/creatCorridor'}" >creatCorridor</a>
+	 <a th:href="@{'/setRoomLinkPoint'}" >setRoomLinkPoint</a>
+	 <a th:href="@{'/corridorRollBack'}" >corridorRollBack</a>
+</body>
+</html>
