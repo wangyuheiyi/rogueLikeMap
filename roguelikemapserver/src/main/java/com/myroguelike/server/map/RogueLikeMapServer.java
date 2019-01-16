@@ -59,10 +59,17 @@ public class RogueLikeMapServer {
 		return modelAndView;
 	}
 	
-//	@RequestMapping(value="/initMap",method =RequestMethod.GET)
-//	public String initMap(Model model){
-//		MapControler.getInstance().initMapInfo();
-//		model.addAttribute("mapInfo", MapControler.getInstance().getMapInfo());
-//		return "/map";
-//	}
+	@RequestMapping(value="/initAllMap",method =RequestMethod.GET)
+	public ModelAndView initAllMap(){
+		MapControler.getInstance().initMapInfo();
+		MapControler.getInstance().creatRoomByMap();
+		MapControler.getInstance().creatCorridor();
+		MapControler.getInstance().setRoomLinkPoint();
+		MapControler.getInstance().corridorRollBack();
+		MapControler.getInstance().printMapInfo();
+		ModelAndView modelAndView = new ModelAndView();	
+		modelAndView.addObject("mapInfo", MapControler.getInstance().getMapInfo());
+		modelAndView.setViewName("map");
+		return modelAndView;
+	}
 }
