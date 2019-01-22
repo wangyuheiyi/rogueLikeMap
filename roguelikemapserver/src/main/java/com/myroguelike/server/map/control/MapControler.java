@@ -193,7 +193,7 @@ public class MapControler {
 			}
 		}
 	}
-	
+
 	public void corridorRollBack() {
 		//循环所有的通道点
 		for(int i=0;i<maxXsize;i++) {
