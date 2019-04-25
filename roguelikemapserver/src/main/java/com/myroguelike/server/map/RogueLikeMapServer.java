@@ -10,6 +10,13 @@ import com.myroguelike.server.map.control.MapControler;
 @RestController
 @RequestMapping("/")
 public class RogueLikeMapServer {
+	@RequestMapping(value="/test",method =RequestMethod.GET)
+	public ModelAndView testInfo(){
+//		MapControler.getInstance().initMapInfo();
+		ModelAndView modelAndView = new ModelAndView();	
+		modelAndView.setViewName("iviewtest");
+		return modelAndView;
+	}
 	@RequestMapping(value="/initMap",method =RequestMethod.GET)
 	public ModelAndView initMap(){
 		MapControler.getInstance().initMapInfo();
